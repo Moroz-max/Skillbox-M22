@@ -8,5 +8,5 @@ target 'Skillbox-M18' do
   # Pods for Skillbox-M18
 pod 'Alamofire'
 pod 'SnapKit'
-
+pod 'SwiftLint'
 end

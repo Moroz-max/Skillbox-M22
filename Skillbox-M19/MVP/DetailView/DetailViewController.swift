@@ -104,7 +104,6 @@ class DetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setupViews()
         setupConstraints()
     }
@@ -202,34 +201,9 @@ class DetailViewController: UIViewController {
             make.center.equalTo(filmImageView.snp.center)
         }
     }
-    func loadFilmData(id: Int) {
-        Service().loadDetailFilm(filmId: id) { result in
-            self.configure(model: result)
-        }
-    }
-    
-    private func configure(model: DetailFilms) {
-        if let url = URL(string: model.posterUrl) {
-            DispatchQueue.global().async {
-                let data = try? Data(contentsOf: url)
-                DispatchQueue.main.async {
-                    self.filmImageView.image = UIImage(data: data!)
-                    self.activityIndicator.stopAnimating()
-                }
-            }
-        }
-        DispatchQueue.main.async {
-            self.kinopoiskRating.text = "\(model.ratingKinopoisk)"
-            self.IMDBRating.text = "\(model.ratingImdb)"
-            self.filmRUTitleLabel.text = model.nameRu
-            self.filmENTitleLabel.text = model.nameOriginal
-            self.filmDescriptionTextView.text = model.description
-            self.yearLabel.text = "\(model.year)"
-            self.durationTimeLabel.text = "\(model.filmLength) мин."
-        }
-        
-    }
-    
+
+
+
 
 
 }

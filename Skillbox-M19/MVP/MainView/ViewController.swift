@@ -9,12 +9,12 @@ import UIKit
 import SnapKit
 
 class ViewController: UIViewController {
-    
+
     let searchCellID = "searchCell"
 
     var isSearch = true
-    var filmsArray = [Films]()
-    
+    var presenter: FilmViewPresenterProtocol?
+
     private lazy var searchTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Введите запрос"
@@ -31,16 +31,7 @@ class ViewController: UIViewController {
         button.addTarget(self, action: #selector(searchButtonPresed), for: .touchUpInside)
         return button
     }()
-    
-    private lazy var popularFilmsButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Популярные фильмы", for: .normal)
-        button.tintColor = .white
-        button.backgroundColor = .systemBlue
-        button.layer.cornerRadius = 8
-        button.addTarget(self, action: #selector(popularFilmsPressed), for: .touchUpInside)
-        return button
-    }()
+
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: CGRect.zero, style: .plain)
@@ -50,7 +41,6 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupViews()
         setupConstraints()
         tableView.dataSource = self
@@ -60,7 +50,6 @@ class ViewController: UIViewController {
     private func setupViews() {
         view.addSubview(searchTextField)
         view.addSubview(searchButton)
-        view.addSubview(popularFilmsButton)
         view.addSubview(tableView)
     }
 
@@ -76,47 +65,28 @@ class ViewController: UIViewController {
             make.top.equalTo(searchTextField.snp.bottom).offset(20)
             make.centerX.equalTo(searchTextField.snp.centerX)
         }
-        popularFilmsButton.snp.makeConstraints { make in
-            make.width.equalTo(220)
-            make.height.equalTo(40)
-            make.centerX.equalTo(searchButton.snp.centerX)
-            make.top.equalTo(searchButton.snp.bottom).offset(20)
-        }
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(popularFilmsButton.snp.bottom).offset(20)
+            make.top.equalTo(searchButton.snp.bottom).offset(20)
             make.left.equalTo(view.snp.left)
             make.right.equalTo(view.snp.right)
             make.bottom.equalTo(view.snp.bottom)
         }
     }
     
-    private func search(keyword: String) {
-        Service().loadFilmsByKeyword(requestText: keyword) { result in
-            self.filmsArray = result
-            self.isSearch = true
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        }
-    }
-    
-    private func topFilms() {
-        Service().loadPopularFilms { result in
-            self.filmsArray = result
-            self.isSearch = false
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        }
-    }
-    
     @objc func searchButtonPresed() {
-        search(keyword: searchTextField.text ?? "")
+        presenter?.getFilmsByKeyword(searchTextField.text ?? "")
     }
     
     @objc func popularFilmsPressed() {
-        topFilms()
     }
+
+//    func openFilmView(film: FilmsToDisplay) {
+//        let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+//        let nextViewController = storyBoard.instantiateViewController(withIdentifier: "DetailVC") as? DetailViewController ?? UIViewController()
+//        nextViewController.title = "О фильме"
+//        //nextViewController.loadFilmData(id: filmsArray[indexPath.row].filmId)
+//        self.present(nextViewController, animated: true)
+//    }
 
 }
 
@@ -124,13 +94,15 @@ class ViewController: UIViewController {
 extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filmsArray.count
+        return presenter?.films?.count ?? 0
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: searchCellID, for: indexPath) as? SearchTableViewCell
-        cell?.configure(filmsArray[indexPath.row])
+        if let film = presenter?.films?[indexPath.row] {
+            cell?.configure(film)
+        }
         return cell ?? UITableViewCell()
     }
     
@@ -147,11 +119,12 @@ extension ViewController: UITableViewDataSource {
 extension ViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
-        let nextViewController = storyBoard.instantiateViewController(withIdentifier: "DetailVC") as! DetailViewController
-        nextViewController.title = "О фильме"
-        nextViewController.loadFilmData(id: filmsArray[indexPath.row].filmId)
-        self.present(nextViewController, animated: true)
-        tableView.deselectRow(at: indexPath, animated: true)
+        presenter?.didSelectFilmAt(indexPath)
+    }
+}
+
+extension ViewController: FilmViewProtocol {
+    func getFilms() {
+        tableView.reloadData()
     }
 }

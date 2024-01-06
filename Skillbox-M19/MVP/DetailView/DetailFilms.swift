@@ -1,17 +1,11 @@
 //
-//  Model.swift
+//  DetailFilms.swift
 //  Skillbox-M19
 //
-//  Created by Максим Морозов on 23.12.2023.
+//  Created by Максим Морозов on 06.01.2024.
 //
 
 import Foundation
-
-struct Films: Codable {
-    let filmId: Int
-    let nameRu: String
-    let posterUrl: String
-}
 
 struct DetailFilms: Codable {
     let nameRu: String

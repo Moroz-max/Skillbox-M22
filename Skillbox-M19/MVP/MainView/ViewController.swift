@@ -8,34 +8,27 @@
 import UIKit
 import SnapKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UISearchBarDelegate {
 
     let searchCellID = "searchCell"
 
-    var isSearch = true
     var presenter: FilmViewPresenterProtocol?
 
-    private lazy var searchTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Введите запрос"
-        textField.borderStyle = .roundedRect
-        return textField
-    }()
-    
-    private lazy var searchButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Поиск", for: .normal)
-        button.tintColor = .white
-        button.backgroundColor = .systemBlue
-        button.layer.cornerRadius = 8
-        button.addTarget(self, action: #selector(searchButtonPresed), for: .touchUpInside)
-        return button
+    private lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.delegate = self
+        searchBar.searchBarStyle = .prominent
+        searchBar.placeholder = "Введите запрос"
+        searchBar.sizeToFit()
+        searchBar.delegate = self
+        return searchBar
     }()
 
-    
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: CGRect.zero, style: .plain)
         tableView.register(SearchTableViewCell.self, forCellReuseIdentifier: searchCellID)
+        tableView.dataSource = self
+        tableView.delegate = self
         return tableView
     }()
     
@@ -43,51 +36,29 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
-        tableView.dataSource = self
-        tableView.delegate = self
     }
     
     private func setupViews() {
-        view.addSubview(searchTextField)
-        view.addSubview(searchButton)
         view.addSubview(tableView)
+        view.addSubview(searchBar)
     }
 
     private func setupConstraints() {
-        searchTextField.snp.makeConstraints { make in
-            make.left.equalTo(view.snp.leftMargin).offset(20)
-            make.top.equalTo(view.snp.topMargin).offset(20)
-            make.right.equalTo(view.snp.rightMargin).offset(-20)
-        }
-        searchButton.snp.makeConstraints { make in
-            make.width.equalTo(80)
-            make.height.equalTo(40)
-            make.top.equalTo(searchTextField.snp.bottom).offset(20)
-            make.centerX.equalTo(searchTextField.snp.centerX)
+        searchBar.snp.makeConstraints { make in
+            make.left.equalTo(view.snp.leftMargin)
+            make.top.equalTo(view.snp.topMargin)
+            make.right.equalTo(view.snp.rightMargin)
         }
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(searchButton.snp.bottom).offset(20)
+            make.top.equalTo(searchBar.snp.bottom)
             make.left.equalTo(view.snp.left)
             make.right.equalTo(view.snp.right)
             make.bottom.equalTo(view.snp.bottom)
         }
     }
-    
-    @objc func searchButtonPresed() {
-        presenter?.getFilmsByKeyword(searchTextField.text ?? "")
+    func searchBar(_ searchBar: UISearchBar, textDidChange textSearched: String) {
+        presenter?.getFilmsByKeyword(searchBar.text ?? "")
     }
-    
-    @objc func popularFilmsPressed() {
-    }
-
-//    func openFilmView(film: FilmsToDisplay) {
-//        let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
-//        let nextViewController = storyBoard.instantiateViewController(withIdentifier: "DetailVC") as? DetailViewController ?? UIViewController()
-//        nextViewController.title = "О фильме"
-//        //nextViewController.loadFilmData(id: filmsArray[indexPath.row].filmId)
-//        self.present(nextViewController, animated: true)
-//    }
-
 }
 
 
@@ -107,12 +78,7 @@ extension ViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if isSearch {
-            return "Результаты по запросу: \(searchTextField.text ?? "")"
-        } else {
-            return "Популярные фильмы"
-        }
-        
+        return "Результаты по запросу: \(searchBar.text ?? "")"
     }
 }
 

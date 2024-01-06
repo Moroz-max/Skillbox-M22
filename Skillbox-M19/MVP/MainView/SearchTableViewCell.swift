@@ -13,7 +13,7 @@ class SearchTableViewCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.backgroundColor = #colorLiteral(red: 0.9647058845, green: 0.9647058845, blue: 0.9647058845, alpha: 1)
         imageView.layer.cornerRadius = 8
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
     }()

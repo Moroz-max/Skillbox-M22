@@ -14,7 +14,8 @@ class DetailViewController: UIViewController {
         let imageView = UIImageView()
         imageView.backgroundColor = #colorLiteral(red: 0.9647058845, green: 0.9647058845, blue: 0.9647058845, alpha: 1)
         imageView.layer.cornerRadius = 8
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
         return imageView
     }()
     
@@ -67,6 +68,7 @@ class DetailViewController: UIViewController {
         let textView = UITextView()
         textView.font = .systemFont(ofSize: 14)
         textView.text = ""
+        textView.isEditable = false
         return textView
     }()
     
@@ -101,11 +103,14 @@ class DetailViewController: UIViewController {
         indicator.startAnimating()
         return indicator
     }()
-    
+
+    var presenter: DetailFilmViewPresenterProtocol?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
+        presenter?.setFilm()
     }
     
     private func setupViews() {
@@ -201,9 +206,24 @@ class DetailViewController: UIViewController {
             make.center.equalTo(filmImageView.snp.center)
         }
     }
+}
 
-
-
-
-
+extension DetailViewController: DetailFilmViewProtocol {
+    func getFilmDetail(film: DetailFilms?) {
+        kinopoiskRating.text = "\(film?.ratingImdb ?? 0.0)"
+        IMDBRating.text = "\(film?.ratingImdb ?? 0.0)"
+        filmRUTitleLabel.text = film?.nameRu
+        filmENTitleLabel.text = film?.nameOriginal
+        filmDescriptionTextView.text = film?.description
+        yearLabel.text = "\(film?.year ?? 0)г."
+        durationTimeLabel.text = "\(film?.filmLength ?? 0) мин."
+        let url = URL(string: film?.posterUrl ?? "")
+        DispatchQueue.global().async {
+            let data = try? Data(contentsOf: url!)
+            DispatchQueue.main.async {
+                self.filmImageView.image = UIImage(data: data!)
+                self.activityIndicator.stopAnimating()
+            }
+        }
+    }
 }

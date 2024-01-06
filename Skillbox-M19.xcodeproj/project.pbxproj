@@ -83,6 +83,7 @@
 				1FBBDC872B3766600051E85E /* Films.swift */,
 				1F629BE62B479BC10042AB2D /* FilmPresenter.swift */,
 				1FBBDC712B36510E0051E85E /* ViewController.swift */,
+				1FBBDC812B3674770051E85E /* SearchTableViewCell.swift */,
 			);
 			path = MainView;
 			sourceTree = "<group>";
@@ -113,7 +114,6 @@
 				1FBBDC852B3766560051E85E /* Networking.swift */,
 				1F629BEA2B48EA880042AB2D /* ModuleBuilder.swift */,
 				1F629BE52B479BAC0042AB2D /* MVP */,
-				1FBBDC812B3674770051E85E /* SearchTableViewCell.swift */,
 				1FBBDC732B36510E0051E85E /* Main.storyboard */,
 				1FBBDC762B3651100051E85E /* Assets.xcassets */,
 				1FBBDC782B3651100051E85E /* LaunchScreen.storyboard */,

@@ -9,6 +9,7 @@ import UIKit
 
 protocol Builder {
     static func createMainViewModule() -> UIViewController
+    static func createDetailViewModule(film: DetailFilms?) -> UIViewController
 }
 
 class ModuleBuilder: Builder {
@@ -17,6 +18,15 @@ class ModuleBuilder: Builder {
         let view = ViewController()
         let netWorkService = Networking()
         let presenter = FilmPresenter(view: view, networkService: netWorkService)
+        view.presenter = presenter
+        view.view.backgroundColor = .systemBackground
+        return view
+    }
+
+    static func createDetailViewModule(film: DetailFilms?) -> UIViewController {
+        let view = DetailViewController()
+        let netWorkService = Networking()
+        let presenter = DetailFilmPresenter(view: view, networkService: netWorkService, film: film!)
         view.presenter = presenter
         view.view.backgroundColor = .systemBackground
         return view

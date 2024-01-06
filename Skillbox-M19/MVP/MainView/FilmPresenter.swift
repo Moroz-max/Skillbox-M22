@@ -15,7 +15,6 @@ protocol FilmViewPresenterProtocol: AnyObject {
     init(view: FilmViewProtocol, networkService: NetworkingProtocol)
     func getFilmsByKeyword(_ keyword: String)
     var films: [Films]? { get set}
-    func didSelectFilmAt(_ indexPath: IndexPath)
 }
 
 class FilmPresenter: FilmViewPresenterProtocol {
@@ -42,9 +41,5 @@ class FilmPresenter: FilmViewPresenterProtocol {
                 }
             }
         }
-    }
-
-    func didSelectFilmAt(_ indexPath: IndexPath) {
-        print(films?[indexPath.row])
     }
 }

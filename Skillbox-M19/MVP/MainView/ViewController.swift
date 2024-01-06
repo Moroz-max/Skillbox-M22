@@ -119,7 +119,14 @@ extension ViewController: UITableViewDataSource {
 extension ViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        presenter?.didSelectFilmAt(indexPath)
+        let filmID = presenter?.films?[indexPath.row].filmId ?? 0
+        Networking().loadDetailFilm(filmId: filmID) { result in
+            DispatchQueue.main.async {
+                let detailVC = ModuleBuilder.createDetailViewModule(film: result)
+                self.navigationController?.pushViewController(detailVC, animated: true)
+                tableView.deselectRow(at: indexPath, animated: true)
+            }
+        }
     }
 }
 
